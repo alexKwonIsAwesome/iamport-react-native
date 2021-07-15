@@ -1,51 +1,47 @@
 import React from 'react';
-import { View } from 'react-native';
-import { List, ListItem, Icon, Button, Text } from 'native-base';
+import {
+  ArrowBackIcon,
+  CheckCircleIcon,
+  IconButton,
+  List,
+  Text,
+  View,
+  WarningIcon,
+} from 'native-base';
 
-import { resultStyles, resultSuccessStyles, resultFailureStyles } from '../styles';
-
-export default function CertificationResult({ navigation }) {
-  const response = navigation.getParam('response');
-  const { success, imp_uid, merchant_uid, error_msg } = response;
-  const { wrapper, title, listContainer, list, label, value } = resultStyles;
-
-  const isSuccess = success === true;
-  const { icon, btn, btnText, btnIcon } = isSuccess ? resultSuccessStyles : resultFailureStyles;
+export default function CertificationResult({ route, navigation }) {
+  const success = route.params.success;
+  const imp_uid = route.params.imp_uid;
+  const merchant_uid = route.params.merchant_uid;
+  const error_msg = route.params.error_msg;
 
   return (
-    <View style={wrapper}>
-      <Icon
-        style={icon}
-        type="AntDesign"
-        name={isSuccess ? 'checkcircle' : 'exclamationcircle'}
-      />
-      <Text style={title}>{`본인인증에 ${isSuccess ? '성공' : '실패'}하였습니다`}</Text>
-      <List style={listContainer}>
-        <ListItem style={list}>
-          <Text style={label}>아임포트 번호</Text>
-          <Text style={value}>{imp_uid}</Text>
-        </ListItem>
-        {isSuccess ? (
-          <ListItem style={list}>
-            <Text style={label}>주문번호</Text>
-            <Text style={value}>{merchant_uid}</Text>
-          </ListItem>
+    <View>
+      {success ? <CheckCircleIcon /> : <WarningIcon />}
+      <Text>{`본인인증에 ${success ? '성공' : '실패'}하였습니다`}</Text>
+      <List>
+        <List.Item>
+          <Text>아임포트 번호</Text>
+          <Text>{imp_uid}</Text>
+        </List.Item>
+        {success ? (
+          <List.Item>
+            <Text>주문번호</Text>
+            <Text>{merchant_uid}</Text>
+          </List.Item>
         ) : (
-          <ListItem style={list}>
-            <Text style={label}>에러메시지</Text>
-            <Text style={value}>{error_msg}</Text>
-          </ListItem>
+          <List.Item>
+            <Text>에러메시지</Text>
+            <Text>{error_msg}</Text>
+          </List.Item>
         )}
       </List>
-      <Button
-        bordered
-        transparent
-        style={btn}
+      <IconButton
+        icon={<ArrowBackIcon />}
         onPress={() => navigation.navigate('Home')}
       >
-        <Icon name="arrow-back" style={btnIcon} />
-        <Text style={btnText}>돌아가기</Text>
-      </Button>
+        <Text>돌아가기</Text>
+      </IconButton>
     </View>
   );
 }

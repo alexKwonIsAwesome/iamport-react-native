@@ -1,106 +1,97 @@
 import React, { useState } from 'react';
-import { Content, Form, Item, Label, Input, Button, Text } from 'native-base';
+import {
+  Button,
+  FormControl,
+  Input,
+  ScrollView,
+  Select,
+  Stack,
+  Text,
+} from 'native-base';
 import Picker from '../Picker';
-
-import { CARRIERS } from '../constants';
-import { formStyles } from '../styles';
+import { CARRIERS, TIER_CODES } from '../constants';
 
 export default function CertificationTest({ navigation }) {
-  const { wrapper, form, item, label, input, btn, btnText } = formStyles;
   const [merchantUid, setMerchantUid] = useState(`mid_${new Date().getTime()}`);
   const [company, setCompany] = useState('아임포트');
-  const [carrier, setCarrier] = useState('');
+  const [carrier, setCarrier] = useState('SKT');
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
-  const [minAge, setMinAge] = useState();
-
-  onPress = () => {
-    const params = {
-      merchant_uid: merchantUid,
-    };
-    if (company) {
-      params.company = company;
-    }
-    if (carrier) {
-      params.carrier = carrier;
-    }
-    if (name) {
-      params.name = name;
-    }
-    if (phone) {
-      params.phone = phone;
-    }
-    if (minAge) {
-      params.minAge = minAge;
-    }
-    
-    navigation.navigate('Certification', { params });
-  };
+  const [minAge, setMinAge] = useState('');
+  const [tierCode, setTierCode] = useState('');
 
   return (
-    <Content style={wrapper}>
-      <Form style={form}>
-        <Item inlineLabel style={item}>
-          <Label style={label}>주문번호</Label>
+    <ScrollView>
+      <FormControl>
+        <Stack>
+          <FormControl.Label>주문번호</FormControl.Label>
           <Input
-            style={input}
             value={merchantUid}
-            onChangeText={value => setMerchantUid(value)}
+            onChangeText={(value) => setMerchantUid(value)}
           />
-        </Item>
-        <Item inlineLabel style={item}>
-          <Label style={label}>회사명</Label>
-          <Input
-            style={input}
-            placeholder="또는 도메인"
-            value={company}
-            onChangeText={value => setCompany(value)}
-          />
-        </Item>
-        <Item inlineLabel style={item}>
-          <Label style={label}>통신사</Label>
-          <Picker
-            iosHeader="통신사 선택"
-            data={CARRIERS}
+        </Stack>
+        <Stack>
+          <FormControl.Label>회사명</FormControl.Label>
+          <Input value={company} onChangeText={(value) => setCompany(value)} />
+        </Stack>
+        <Stack>
+          <FormControl.Label>통신사</FormControl.Label>
+          <Select
             selectedValue={carrier}
-            onValueChange={value => setCarrier(value)}
-          />
-        </Item>
-        <Item inlineLabel style={item}>
-          <Label style={label}>이름</Label>
+            onValueChange={(value) => setCarrier(value)}
+          >
+            {CARRIERS.map(({ label, value }, index) => {
+              return <Select.Item label={label} value={value} key={index} />;
+            })}
+          </Select>
+        </Stack>
+        <Stack>
+          <FormControl.Label>이름</FormControl.Label>
+          <Input value={name} onChangeText={(value) => setName(value)} />
+        </Stack>
+        <Stack>
+          <FormControl.Label>전화번호</FormControl.Label>
           <Input
-            style={input}
-            value={name}
-            onChangeText={value => setName(value)}
-          />
-        </Item>
-        <Item inlineLabel style={item}>
-          <Label style={label}>전화번호</Label>
-          <Input
-            style={input}
-            keyboardType="number-pad"
             value={phone}
-            onChangeText={value => setPhone(value)}
-          />
-        </Item>
-        <Item inlineLabel style={item}>
-          <Label style={label}>최소연령</Label>
-          <Input
-            style={input}
             keyboardType="number-pad"
-            placeholder="허용 최소 만 나이"
-            value={minAge}
-            onChangeText={value => setMinAge(value)}
+            onChangeText={(value) => setPhone(value)}
           />
-        </Item>
+        </Stack>
+        <Stack>
+          <FormControl.Label>최소연령</FormControl.Label>
+          <Input
+            value={minAge}
+            keyboardType="number-pad"
+            onChangeText={(value) => setMinAge(value)}
+          />
+        </Stack>
+        <Stack>
+          <FormControl.Label>티어 코드</FormControl.Label>
+          <Picker
+            data={TIER_CODES}
+            selectedValue={tierCode}
+            onValueChange={(value) => setTierCode(value)}
+          />
+        </Stack>
         <Button
-          primary
-          style={btn}
-          onPress={this.onPress}
+          onPress={() => {
+            const data = {
+              params: {
+                merchant_uid: merchantUid,
+                company,
+                carrier,
+                name,
+                phone,
+                min_age: minAge,
+              },
+              tierCode,
+            };
+            navigation.navigate('Certification', data);
+          }}
         >
-          <Text style={btnText}>본인인증 하기</Text>
+          <Text>본인인증 하기</Text>
         </Button>
-      </Form>
-    </Content>
-  );  
+      </FormControl>
+    </ScrollView>
+  );
 }
